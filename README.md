@@ -1,0 +1,2 @@
+# beautifulsoup_example
+使用beautifulsoap網路爬蟲抓資料
