@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 
 # 啄木鳥
 def getinfo():
-    # his = ["/item/%E7%BD%91%E7%BB%9C%E7%88%AC%E8%99%AB/5162711"]
     his = []
 
     myurl = base_url + ""
@@ -30,9 +29,6 @@ def getinfo():
     # print(soup.find('headNav').get_text())
 
     # 网络爬虫     url:
-
-    # find valid urls
-    # sub_urls = soup.find_all("a", {"target": "_top", "href": re.compile("/TinTin/EC*")})
 
     productDivs = soup.find_all('div', attrs={'class': 'center_area'})
 

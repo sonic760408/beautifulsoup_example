@@ -74,12 +74,20 @@ def getitems(url: str):
     productDivs = soup.find_all('div', attrs={'class': 'ti'})
     productPriceDivs = soup.find_all('span', attrs={'class': 'red'})
     for div in productDivs:
-        # print(div)
-        prdt_name = div.find_all('a')
+        # getprdtname(url)
 
-        for p in prdt_name:
+        #print(url)
+        prdt_name = div.find('a')
+        # print(prdt_name)
+
+        if bool(prdt_name):
+            prdt_names.append(getprdtname(prdt_name['href']))
+        else:
+            prdt_names.append("")
+
+        #for p in prdt_name:
             # print(p.get_text())
-            prdt_names.append(str(p.get_text()))
+        #    prdt_names.append(str(p.get_text()))
 
     for div in productPriceDivs:
         mystr = str(div.get_text())
@@ -92,7 +100,9 @@ def getitems(url: str):
                 prdt_prices.append(str(mystr))
                 # print(mystr)
                 # print(e)
-
+        else:
+            prdt_prices.append("")
+    '''
     i = 0
     for p in prdt_names:
         #print("prdt_names[%d]: " % i, end='')
@@ -104,12 +114,30 @@ def getitems(url: str):
         #print("prdt_price[%d]: " % i, end='')
         #print(p)
         i = i + 1
+    '''
 
     if len(prdt_names) == len(prdt_prices):
         for i in range(0, len(prdt_names) - 1, 1):
             items = [prdt_names[i], prdt_prices[i]]
             writetocsv(items)
             # printf("%s, %s \n", prdt_names[i], prdt_prices[i])
+
+
+def getprdtname(url: str):
+    myurl = base_url + url
+    # printf("url: %s\n", myurl)
+    html = []
+    try:
+        html = urlopen(myurl, timeout=10).read().decode('utf-8')
+    except Exception as e:
+        print(e)
+        return ""
+        # sys.exit(1)
+
+    soup = BeautifulSoup(html, features='lxml')
+
+    title = soup.find('title')
+    return str(title.get_text())
 
 
 def printf(format, *args):
