@@ -5,11 +5,17 @@ import sys
 import csv
 import os
 import logging
+import pandas as pd
 
 base_url = "https://www.woodpecker.com.tw"
+
 output_csv = "wood.csv"
+output_xls = "wood.xls"
+
 sub_url = "/0/default/asc/"
 logger = logging.getLogger(__name__)
+
+myitems = []
 
 # 啄木鳥
 def getinfo():
@@ -64,6 +70,8 @@ def getinfo():
             # i = i + 1
 
         # 使用link抓資料
+
+    writetocsv(myitems)
 
 
 def getitems(url: str):
@@ -130,6 +138,7 @@ def getitems(url: str):
     '''
 
 
+
 def getpageitems(url: str):
     
     prdt_names = []
@@ -164,8 +173,9 @@ def getpageitems(url: str):
 
     if len(prdt_names) == len(prdt_prices):
         for i in range(0, len(prdt_names) - 1, 1):
-            items = [prdt_names[i], prdt_prices[i]]
-            writetocsv(items)
+            price = prdt_prices[i].replace(",", "")
+            items = [prdt_names[i], price]
+            myitems.append(items)
 
 
 
@@ -176,7 +186,8 @@ def printf(format, *args):
 def writetocsv(data):
     if bool(data):
         with open(output_csv, "a", newline='') as csv_file:
-            writer = csv.writer(csv_file, delimiter=',')
+            writer = csv.writer(csv_file, delimiter='\n')
+            writer.writerow(['品名, 價格'])
             # for line in data:
             # print(line)
             writer.writerow(data)
@@ -220,9 +231,13 @@ def logconfig():
     logging.getLogger('').addHandler(console)
 
 # exists
+def csv_to_xlsx_pd():
+    mycsv = pd.read_csv(output_csv, encoding='utf-8')
+    mycsv.to_excel(output_xls, sheet_name='data')
 
 # 進入點
 if __name__ == '__main__':
-    logconfig()
+    #logconfig()
     checkfile()
     getinfo()
+    csv_to_xlsx_pd()

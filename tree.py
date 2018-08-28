@@ -4,9 +4,13 @@ import re
 import sys
 import csv
 import os
+import pandas as pd
 
 base_url = "https://shop.greattree.com.tw/greattree/"
 output_csv = "tree.csv"
+output_xls = "tree.xls"
+
+myitems = []
 
 #大樹
 def getinfo():
@@ -52,6 +56,12 @@ def getinfo():
 
     for ref in my:
         getitems(str(ref))
+
+    #for item in myitems:
+    #    print(item)
+
+    writetocsv()
+
     '''
     for div in productDivs:
         # print(div)
@@ -125,24 +135,43 @@ def getitems(url: str):
 
     if len(prdt_names) == len(prdt_prices):
         for i in range(0, len(prdt_names) - 1, 1):
-            items = [prdt_names[i], prdt_prices[i]]
-            writetocsv(items)
+            #myitems.append([prdt_names[i], prdt_prices[i]])
+            item = [prdt_names[i], prdt_prices[i]]
+            myitems.append(item)
+            #myitems.append('\n')
+            #writetocsv(myitems)
             #printf("%s, %s \n", prdt_names[i], prdt_prices[i])
+
+    #writetocsv()
 
 
 def printf(format, *args):
     sys.stdout.write(format % args)
 
-
+'''
 def writetocsv(data):
     if bool(data):
         with open(output_csv, "a", newline='') as csv_file:
             writer = csv.writer(csv_file, delimiter=',')
-
+            # print("CALL IT")
+            # writer.writerow(['品名', '價格'])
             # for line in data:
             # print(line)
 
             writer.writerow(data)
+'''
+
+
+def writetocsv():
+    if bool(myitems):
+        with open(output_csv, "a", newline='') as csv_file:
+            writer = csv.writer(csv_file, delimiter='\n')
+            # print("CALL IT")
+            writer.writerow(['品名, 價格'])
+            # for line in data:
+            # print(line)
+            writer.writerow(myitems)
+
 
 
 def readfromcsv():
@@ -168,7 +197,13 @@ def cleanhtml(raw_html):
     return cleantext
 
 
+def csv_to_xlsx_pd():
+    mycsv = pd.read_csv(output_csv, encoding='utf-8')
+    mycsv.to_excel(output_xls, sheet_name='data')
+
+
 # 進入點
 if __name__ == '__main__':
     checkfile()
     getinfo()
+    csv_to_xlsx_pd()

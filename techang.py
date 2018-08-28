@@ -4,10 +4,11 @@ import re
 import sys
 import csv
 import os
+import pandas as pd
 
 base_url = "http://www.te-chang.com/"
 output_csv = "techang.csv"
-
+output_xls = "techang.xls"
 
 # 德昌
 def getinfo():
@@ -58,7 +59,7 @@ def getinfo():
 
 def getitems(url: str):
     myurl = base_url + url
-    # printf("url: %s\n", myurl)
+    printf("url: %s\n", myurl)
     html = []
     try:
         html = urlopen(myurl, timeout=10).read().decode('utf-8')
@@ -148,6 +149,7 @@ def writetocsv(data):
     if bool(data):
         with open(output_csv, "a", newline='') as csv_file:
             writer = csv.writer(csv_file, delimiter=',')
+            writer.writerow(['品名', '價格'])
             # for line in data:
             # print(line)
             writer.writerow(data)
@@ -176,7 +178,13 @@ def checkfile():
         os.remove(output_csv)
 
 
+def csv_to_xlsx_pd():
+    mycsv = pd.read_csv(output_csv, encoding='utf-8')
+    mycsv.to_excel(output_xls, sheet_name='data')
+
+
 # 進入點
 if __name__ == '__main__':
     checkfile()
     getinfo()
+    csv_to_xlsx_pd()

@@ -8,6 +8,7 @@ from selenium import webdriver
 
 base_url = "https://shopee.tw/api/v2/search_items/"
 output_csv = "shopee.csv"
+output_xls = "shopee.xls"
 
 #幫寶適
 #get_para1 = '?by=relevancy&keyword=%E5%B9%AB%E5%AF%B6%E9%81%A9&limit=50&match_id=100&newest=0&order=desc&page_type=search'
@@ -71,6 +72,7 @@ def getinfo(mycookie):
         lastpage = lastpage
 
     #lastpage = 4
+    items.append(['品名', '價格'])
 
     for i in range(0, lastpage, 1):
         res = requests.get(base_url+get_para1+get_para2+str(i)+get_para3, headers=header)
@@ -134,9 +136,15 @@ def getcookie():
     return driver.get_cookies()
 
 
+def csv_to_xlsx_pd():
+    mycsv = pd.read_csv(output_csv, encoding='utf-8')
+    mycsv.to_excel(output_xls, sheet_name='data')
+
+
 # 進入點
 if __name__ == '__main__':
-    checkfile()
-    mycookie = getcookie()
-    getinfo(mycookie)
+    #checkfile()
+    #mycookie = getcookie()
+    #getinfo(mycookie)
     #parsecsv()
+    csv_to_xlsx_pd()

@@ -4,11 +4,15 @@ import re
 import sys
 import csv
 import os
+import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
 base_url = "https://www.wholecome.tw/shop/"
 output_csv = "wholecome.csv"
+output_xls = "wholecome.xls"
+
+myitems = []
 
 # 合康
 def getinfo():
@@ -83,11 +87,13 @@ def getinfo():
 
         # 使用link抓資料
     '''
+    writetocsv(myitems)
+
 
 def getitems(url: str):
 
     myurl = base_url + url
-    printf("url: %s\n", myurl)
+    #printf("url: %s\n", myurl)
     # 取得網址
     try:
         html = urlopen(myurl, timeout=10).read().decode('utf-8')
@@ -131,8 +137,10 @@ def getitems(url: str):
 
     if len(prdt_names) == len(prdt_prices):
         for i in range(0, len(prdt_names) - 1, 1):
-            items = [prdt_names[i], prdt_prices[i]]
-            writetocsv(items)
+            price = prdt_prices[i].replace(",", "")
+            items = [prdt_names[i], price]
+            myitems.append(items)
+
 
     # readfromcsv()
 
@@ -144,8 +152,8 @@ def printf(format, *args):
 def writetocsv(data):
     if bool(data):
         with open(output_csv, "a", newline='') as csv_file:
-            writer = csv.writer(csv_file, delimiter=',')
-
+            writer = csv.writer(csv_file, delimiter="\n")
+            writer.writerow(['品名, 價格'])
             # for line in data:
                 # print(line)
 
@@ -168,8 +176,13 @@ def checkfile():
 
 
 # exists
+def csv_to_xlsx_pd():
+    mycsv = pd.read_csv(output_csv, encoding='utf-8')
+    mycsv.to_excel(output_xls, sheet_name='data')
+
 
 # 進入點
 if __name__ == '__main__':
     checkfile()
     getinfo()
+    csv_to_xlsx_pd()
